@@ -68,10 +68,12 @@ impl ProxyHandlerHttp {
         // 2, pass along the remaining path segment which was preserved by the router.
         let mut segments = ["/", "", "", "", ""];
         segments[1] = state.backend.path().trim_start_matches('/');
-        if state.backend.path().ends_with('/') {
-            segments[2] = req.uri().path().trim_start_matches('/');
-        } else {
-            segments[2] = req.uri().path();
+        if !req.uri().path().trim_start_matches('/').is_empty() {
+            if state.backend.path().ends_with('/') {
+                segments[2] = req.uri().path().trim_start_matches('/');
+            } else {
+                segments[2] = req.uri().path();
+            }
         }
         // 3 & 4, pass along the query if applicable.
         if let Some(query) = req.uri().query() {
